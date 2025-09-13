@@ -48,8 +48,10 @@ set class-of-service forwarding-classes class Default queue-num 1
 set class-of-service forwarding-classes class BE queue-num 0
 set class-of-service forwarding-classes class dscp15 queue-num 4
 set class-of-service forwarding-classes class EF queue-num 4
+{# Interface classifiers commented out for container environments
 set class-of-service interfaces ge-* unit 0 classifiers dscp dscp-{{ cos_profile }}-v4
 set class-of-service interfaces xe-* unit 0 classifiers dscp dscp-{{ cos_profile }}-v4
+#}
 set class-of-service rewrite-rules dscp dscp15-45 forwarding-class dscp15 loss-priority high code-point 101101
 set class-of-service rewrite-rules dscp dscp15-45 forwarding-class NC loss-priority low code-point 110000
 set class-of-service rewrite-rules dscp dscp15-45 forwarding-class EF loss-priority high code-point 110001
