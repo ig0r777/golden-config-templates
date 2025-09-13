@@ -1,0 +1,57 @@
+{#
+  Cisco Policy-Map Configuration Template
+  
+  This template implements QoS policies matching the Juniper ASLAN 
+  standard for Cisco IOL devices.
+  
+  Variables:
+  - qos_enable: Enable QoS configuration (default: true)
+  - qos_profile: QoS profile name (default: "ASLAN")
+  
+  QoS Actions:
+  1. NC (Network Control) - 5% priority
+  2. EF (Expedited Forwarding) - 20% priority  
+  3. AF41 (Assured Forwarding) - 15% bandwidth
+  4. AF31 (Assured Forwarding) - 30% bandwidth
+  5. AF11 (Assured Forwarding) - 10% bandwidth
+  6. DSCP15 (Custom) - 10% bandwidth
+  7. BE (Best Effort) - 10% bandwidth
+  8. class-default - Fair queue with WRED
+#}
+{%- set qos_enable = qos_enable | default(true) -%}
+{%- set qos_profile = qos_profile | default("ASLAN") -%}
+
+{%- if qos_enable %}
+policy-map {{ qos_profile }}-POLICY
+policy-map {{ qos_profile }}-POLICY description {{ qos_profile }} QoS Policy matching Juniper CoS
+policy-map {{ qos_profile }}-POLICY class NC-CLASS
+policy-map {{ qos_profile }}-POLICY class NC-CLASS priority percent 5
+policy-map {{ qos_profile }}-POLICY class NC-CLASS set dscp cs6
+policy-map {{ qos_profile }}-POLICY class EF-CLASS
+policy-map {{ qos_profile }}-POLICY class EF-CLASS priority percent 20
+policy-map {{ qos_profile }}-POLICY class EF-CLASS set dscp ef
+policy-map {{ qos_profile }}-POLICY class AF41-CLASS
+policy-map {{ qos_profile }}-POLICY class AF41-CLASS bandwidth percent 15
+policy-map {{ qos_profile }}-POLICY class AF41-CLASS queue-limit 75 packets
+policy-map {{ qos_profile }}-POLICY class AF41-CLASS random-detect dscp-based
+policy-map {{ qos_profile }}-POLICY class AF41-CLASS set dscp af41
+policy-map {{ qos_profile }}-POLICY class AF31-CLASS
+policy-map {{ qos_profile }}-POLICY class AF31-CLASS bandwidth percent 30
+policy-map {{ qos_profile }}-POLICY class AF31-CLASS queue-limit 100 packets
+policy-map {{ qos_profile }}-POLICY class AF31-CLASS random-detect dscp-based
+policy-map {{ qos_profile }}-POLICY class AF31-CLASS set dscp af31
+policy-map {{ qos_profile }}-POLICY class DSCP15-CLASS
+policy-map {{ qos_profile }}-POLICY class DSCP15-CLASS bandwidth percent 10
+policy-map {{ qos_profile }}-POLICY class DSCP15-CLASS set dscp 15
+policy-map {{ qos_profile }}-POLICY class AF11-CLASS
+policy-map {{ qos_profile }}-POLICY class AF11-CLASS bandwidth percent 10
+policy-map {{ qos_profile }}-POLICY class AF11-CLASS random-detect dscp-based
+policy-map {{ qos_profile }}-POLICY class AF11-CLASS set dscp af11
+policy-map {{ qos_profile }}-POLICY class BE-CLASS
+policy-map {{ qos_profile }}-POLICY class BE-CLASS bandwidth percent 10
+policy-map {{ qos_profile }}-POLICY class BE-CLASS random-detect dscp-based
+policy-map {{ qos_profile }}-POLICY class BE-CLASS set dscp default
+policy-map {{ qos_profile }}-POLICY class class-default
+policy-map {{ qos_profile }}-POLICY class class-default fair-queue
+policy-map {{ qos_profile }}-POLICY class class-default random-detect
+{%- endif %}
