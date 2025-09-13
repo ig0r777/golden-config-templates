@@ -25,175 +25,65 @@
 {%- set host_outbound_dscp = host_outbound_dscp | default("110000") -%}
 
 {%- if cos_enable %}
-class-of-service {
-    classifiers {
-        dscp dscp-{{ cos_profile }}-v4 {
-            forwarding-class NC {
-                loss-priority low code-points 110000;
-            }
-            forwarding-class EF {
-                loss-priority high code-points [ 101000 100000 101001 101011 100001 100011 110001 101101 ];
-            }
-            forwarding-class AF41 {
-                loss-priority high code-points [ 011000 101110 011100 011110 100110 ];
-            }
-            forwarding-class AF31 {
-                loss-priority high code-points [ 001001 001011 010001 010011 011001 011011 010000 ];
-            }
-            forwarding-class BE {
-                loss-priority high code-points 000000;
-            }
-            forwarding-class Default {
-                loss-priority high code-points 001000;
-            }
-            forwarding-class dscp15 {
-                loss-priority high code-points 001111;
-            }
-        }
-        dscp-ipv6 dscp-{{ cos_profile }}-v6 {
-            forwarding-class NC {
-                loss-priority low code-points 110000;
-            }
-            forwarding-class EF {
-                loss-priority high code-points [ 101000 100000 101001 101011 100001 100011 110001 101101 ];
-            }
-            forwarding-class AF41 {
-                loss-priority high code-points [ 011000 101110 011100 011110 100110 ];
-            }
-            forwarding-class AF31 {
-                loss-priority high code-points [ 001001 001011 010001 010011 011001 011011 010000 ];
-            }
-            forwarding-class BE {
-                loss-priority high code-points 000000;
-            }
-            forwarding-class Default {
-                loss-priority high code-points 001000;
-            }
-            forwarding-class dscp15 {
-                loss-priority high code-points 001111;
-            }
-        }
-    }
-    host-outbound-traffic {
-        forwarding-class {{ host_outbound_class }};
-        dscp-code-point {{ host_outbound_dscp }};
-    }
-    forwarding-classes {
-        class NC queue-num 5;
-        class AF41 queue-num 3;
-        class AF31 queue-num 2;
-        class Default queue-num 1;
-        class BE queue-num 0;
-        class dscp15 queue-num 4;
-        class EF queue-num 4;
-    }
-    interfaces {
-        ge-* {
-            unit 0 {
-                classifiers {
-                    dscp dscp-{{ cos_profile }}-v4;
-                }
-            }
-        }
-        xe-* {
-            unit 0 {
-                classifiers {
-                    dscp dscp-{{ cos_profile }}-v4;
-                }
-            }
-        }
-    }
-    rewrite-rules {
-        dscp dscp15-45 {
-            forwarding-class dscp15 {
-                loss-priority high code-point 101101;
-            }
-            forwarding-class NC {
-                loss-priority low code-point 110000;
-            }
-            forwarding-class EF {
-                loss-priority high code-point 110001;
-            }
-            forwarding-class AF41 {
-                loss-priority high code-point 100110;
-            }
-            forwarding-class AF31 {
-                loss-priority high code-point 010000;
-            }
-            forwarding-class BE {
-                loss-priority high code-point 000000;
-            }
-            forwarding-class Default {
-                loss-priority high code-point 001000;
-            }
-        }
-        dscp-ipv6 dscp15-45 {
-            forwarding-class dscp15 {
-                loss-priority high code-point 101101;
-            }
-            forwarding-class NC {
-                loss-priority low code-point 110000;
-            }
-            forwarding-class EF {
-                loss-priority high code-point 110001;
-            }
-            forwarding-class AF41 {
-                loss-priority high code-point 100110;
-            }
-            forwarding-class AF31 {
-                loss-priority high code-point 010000;
-            }
-            forwarding-class BE {
-                loss-priority high code-point 000000;
-            }
-            forwarding-class Default {
-                loss-priority high code-point 001000;
-            }
-        }
-    }
-    scheduler-maps {
-        map-{{ cos_profile }} {
-            forwarding-class NC scheduler NC;
-            forwarding-class EF scheduler EF;
-            forwarding-class AF41 scheduler AF41;
-            forwarding-class AF31 scheduler AF31;
-            forwarding-class BE scheduler BE;
-            forwarding-class Default scheduler Default;
-            forwarding-class dscp15 scheduler AF41;
-        }
-    }
-    schedulers {
-        NC {
-            transmit-rate percent 5;
-        }
-        EF {
-            shaping-rate percent 20;
-            priority strict-high;
-        }
-        AF41 {
-            shaping-rate percent 15;
-            buffer-size percent 12;
-            priority low;
-        }
-        AF31 {
-            shaping-rate percent 30;
-            buffer-size percent 30;
-            priority low;
-        }
-        BE {
-            transmit-rate {
-                remainder;
-            }
-            buffer-size {
-                remainder;
-            }
-            priority low;
-        }
-        Default {
-            shaping-rate percent 10;
-            buffer-size percent 10;
-            priority low;
-        }
-    }
-}
+set class-of-service classifiers dscp dscp-{{ cos_profile }}-v4 forwarding-class NC loss-priority low code-points 110000
+set class-of-service classifiers dscp dscp-{{ cos_profile }}-v4 forwarding-class EF loss-priority high code-points [ 101000 100000 101001 101011 100001 100011 110001 101101 ]
+set class-of-service classifiers dscp dscp-{{ cos_profile }}-v4 forwarding-class AF41 loss-priority high code-points [ 011000 101110 011100 011110 100110 ]
+set class-of-service classifiers dscp dscp-{{ cos_profile }}-v4 forwarding-class AF31 loss-priority high code-points [ 001001 001011 010001 010011 011001 011011 010000 ]
+set class-of-service classifiers dscp dscp-{{ cos_profile }}-v4 forwarding-class BE loss-priority high code-points 000000
+set class-of-service classifiers dscp dscp-{{ cos_profile }}-v4 forwarding-class Default loss-priority high code-points 001000
+set class-of-service classifiers dscp dscp-{{ cos_profile }}-v4 forwarding-class dscp15 loss-priority high code-points 001111
+set class-of-service classifiers dscp-ipv6 dscp-{{ cos_profile }}-v6 forwarding-class NC loss-priority low code-points 110000
+set class-of-service classifiers dscp-ipv6 dscp-{{ cos_profile }}-v6 forwarding-class EF loss-priority high code-points [ 101000 100000 101001 101011 100001 100011 110001 101101 ]
+set class-of-service classifiers dscp-ipv6 dscp-{{ cos_profile }}-v6 forwarding-class AF41 loss-priority high code-points [ 011000 101110 011100 011110 100110 ]
+set class-of-service classifiers dscp-ipv6 dscp-{{ cos_profile }}-v6 forwarding-class AF31 loss-priority high code-points [ 001001 001011 010001 010011 011001 011011 010000 ]
+set class-of-service classifiers dscp-ipv6 dscp-{{ cos_profile }}-v6 forwarding-class BE loss-priority high code-points 000000
+set class-of-service classifiers dscp-ipv6 dscp-{{ cos_profile }}-v6 forwarding-class Default loss-priority high code-points 001000
+set class-of-service classifiers dscp-ipv6 dscp-{{ cos_profile }}-v6 forwarding-class dscp15 loss-priority high code-points 001111
+set class-of-service host-outbound-traffic forwarding-class {{ host_outbound_class }}
+set class-of-service host-outbound-traffic dscp-code-point {{ host_outbound_dscp }}
+set class-of-service forwarding-classes class NC queue-num 5
+set class-of-service forwarding-classes class AF41 queue-num 3
+set class-of-service forwarding-classes class AF31 queue-num 2
+set class-of-service forwarding-classes class Default queue-num 1
+set class-of-service forwarding-classes class BE queue-num 0
+set class-of-service forwarding-classes class dscp15 queue-num 4
+set class-of-service forwarding-classes class EF queue-num 4
+set class-of-service interfaces ge-* unit 0 classifiers dscp dscp-{{ cos_profile }}-v4
+set class-of-service interfaces xe-* unit 0 classifiers dscp dscp-{{ cos_profile }}-v4
+set class-of-service rewrite-rules dscp dscp15-45 forwarding-class dscp15 loss-priority high code-point 101101
+set class-of-service rewrite-rules dscp dscp15-45 forwarding-class NC loss-priority low code-point 110000
+set class-of-service rewrite-rules dscp dscp15-45 forwarding-class EF loss-priority high code-point 110001
+set class-of-service rewrite-rules dscp dscp15-45 forwarding-class AF41 loss-priority high code-point 100110
+set class-of-service rewrite-rules dscp dscp15-45 forwarding-class AF31 loss-priority high code-point 010000
+set class-of-service rewrite-rules dscp dscp15-45 forwarding-class BE loss-priority high code-point 000000
+set class-of-service rewrite-rules dscp dscp15-45 forwarding-class Default loss-priority high code-point 001000
+set class-of-service rewrite-rules dscp-ipv6 dscp15-45 forwarding-class dscp15 loss-priority high code-point 101101
+set class-of-service rewrite-rules dscp-ipv6 dscp15-45 forwarding-class NC loss-priority low code-point 110000
+set class-of-service rewrite-rules dscp-ipv6 dscp15-45 forwarding-class EF loss-priority high code-point 110001
+set class-of-service rewrite-rules dscp-ipv6 dscp15-45 forwarding-class AF41 loss-priority high code-point 100110
+set class-of-service rewrite-rules dscp-ipv6 dscp15-45 forwarding-class AF31 loss-priority high code-point 010000
+set class-of-service rewrite-rules dscp-ipv6 dscp15-45 forwarding-class BE loss-priority high code-point 000000
+set class-of-service rewrite-rules dscp-ipv6 dscp15-45 forwarding-class Default loss-priority high code-point 001000
+set class-of-service scheduler-maps map-{{ cos_profile }} forwarding-class NC scheduler NC
+set class-of-service scheduler-maps map-{{ cos_profile }} forwarding-class EF scheduler EF
+set class-of-service scheduler-maps map-{{ cos_profile }} forwarding-class AF41 scheduler AF41
+set class-of-service scheduler-maps map-{{ cos_profile }} forwarding-class AF31 scheduler AF31
+set class-of-service scheduler-maps map-{{ cos_profile }} forwarding-class BE scheduler BE
+set class-of-service scheduler-maps map-{{ cos_profile }} forwarding-class Default scheduler Default
+set class-of-service scheduler-maps map-{{ cos_profile }} forwarding-class dscp15 scheduler AF41
+set class-of-service schedulers NC transmit-rate percent 5
+set class-of-service schedulers EF shaping-rate percent 20
+set class-of-service schedulers EF priority strict-high
+set class-of-service schedulers AF41 shaping-rate percent 15
+set class-of-service schedulers AF41 buffer-size percent 12
+set class-of-service schedulers AF41 priority low
+set class-of-service schedulers AF31 shaping-rate percent 30
+set class-of-service schedulers AF31 buffer-size percent 30
+set class-of-service schedulers AF31 priority low
+set class-of-service schedulers BE transmit-rate remainder
+set class-of-service schedulers BE buffer-size remainder
+set class-of-service schedulers BE priority low
+set class-of-service schedulers Default shaping-rate percent 10
+set class-of-service schedulers Default buffer-size percent 10
+set class-of-service schedulers Default priority low
 {%- endif %}
