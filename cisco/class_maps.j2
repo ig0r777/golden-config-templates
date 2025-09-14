@@ -19,32 +19,40 @@
 {%- set qos_enable = qos_enable | default(true) -%}
 
 {%- if qos_enable %}
+!
 class-map match-any NC-CLASS
-class-map NC-CLASS description Network Control Traffic
-class-map NC-CLASS match dscp cs6
-class-map NC-CLASS match dscp cs7
+ description Network Control Traffic
+ match dscp cs6
+ match dscp cs7
+!
 class-map match-any EF-CLASS
-class-map EF-CLASS description Expedited Forwarding - Voice
-class-map EF-CLASS match dscp ef
+ description Expedited Forwarding - Voice
+ match dscp ef
+!
 class-map match-any AF41-CLASS
-class-map AF41-CLASS description Assured Forwarding 41 - Video
-class-map AF41-CLASS match dscp af41
-class-map AF41-CLASS match dscp af42
-class-map AF41-CLASS match dscp af43
+ description Assured Forwarding 41 - Video
+ match dscp af41
+ match dscp af42
+ match dscp af43
+!
 class-map match-any AF31-CLASS
-class-map AF31-CLASS description Assured Forwarding 31 - Business Apps
-class-map AF31-CLASS match dscp af31
-class-map AF31-CLASS match dscp af32
-class-map AF31-CLASS match dscp af33
+ description Assured Forwarding 31 - Business Apps
+ match dscp af31
+ match dscp af32
+ match dscp af33
+!
 class-map match-any AF11-CLASS
-class-map AF11-CLASS description Assured Forwarding 11 - Standard
-class-map AF11-CLASS match dscp af11
-class-map AF11-CLASS match dscp af12
-class-map AF11-CLASS match dscp af13
+ description Assured Forwarding 11 - Standard
+ match dscp af11
+ match dscp af12
+ match dscp af13
+!
 class-map match-any DSCP15-CLASS
-class-map DSCP15-CLASS description Custom DSCP 15 Traffic
-class-map DSCP15-CLASS match dscp 15
+ description Custom DSCP 15 Traffic
+ match dscp 15
+!
 class-map match-any BE-CLASS
-class-map BE-CLASS description Best Effort Traffic
-class-map BE-CLASS match dscp default
+ description Best Effort Traffic
+ match dscp default
+!
 {%- endif %}
